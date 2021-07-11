@@ -159,14 +159,41 @@ struct Node {
     }
 };
 */
-void inOrderTraversal(Node *root, vector<int> &inOrdElements)
+//Approach 1
+
+// void inOrderTraversal(Node *root ,vector<int> &inOrdElements)
+// {
+//     if(root)
+//     {
+//         inOrderTraversal(root->left , inOrdElements);
+//         inOrdElements.push_back(root->data);
+//         inOrderTraversal(root->right , inOrdElements);
+//     }
+// }
+
+int countNodes(Node *root)
 {
-    if (root)
+    if (!root)
     {
-        inOrderTraversal(root->left, inOrdElements);
-        inOrdElements.push_back(root->data);
-        inOrderTraversal(root->right, inOrdElements);
+        return 0;
     }
+
+    return 1 + countNodes(root->left) + countNodes(root->right);
+}
+
+void findMidNode(Node *root, int &position, int targetPosition, int &midValue)
+{
+    if (root == NULL)
+        return;
+
+    findMidNode(root->left, position, targetPosition, midValue);
+
+    position++;
+
+    if (position == targetPosition)
+        midValue = root->data;
+
+    findMidNode(root->right, position, targetPosition, midValue);
 }
 
 // your task is to complete the Function
@@ -174,66 +201,46 @@ void inOrderTraversal(Node *root, vector<int> &inOrdElements)
 float findMedian(struct Node *root)
 {
     //Code here
-    vector<int> inOrdElements;
 
-    inOrderTraversal(root, inOrdElements);
+    //Approach 2
+    if (root == NULL)
+        return 0;
 
-    if (inOrdElements.size() % 2 == 0)
-        return (((inOrdElements[(inOrdElements.size() / 2) - 1]) +
-                 (inOrdElements[(inOrdElements.size() / 2)])) /
-                2.0);
+    //count number of nodes in BST
+    int noOfNodes = countNodes(root);
 
-    return (inOrdElements[(inOrdElements.size() + 1) / 2 - 1]);
+    if (noOfNodes % 2 == 0) //even
+    {
+        int midVal1 = 0, midVal2 = 0;
+        int position = 0;
+
+        findMidNode(root, position, noOfNodes / 2, midVal1);
+
+        position = 0;
+
+        findMidNode(root, position, noOfNodes / 2 + 1, midVal2);
+
+        return (midVal1 + midVal2) / 2.0;
+    }
+    else
+    {
+        int mid = 0;
+        int position = 0;
+
+        findMidNode(root, position, noOfNodes / 2 + 1, mid);
+
+        return mid;
+    }
+
+    //Approach 1
+
+    //   vector<int> inOrdElements;
+
+    //   inOrderTraversal(root , inOrdElements);
+
+    //   if(inOrdElements.size() % 2  == 0)
+    //     return (((inOrdElements[(inOrdElements.size()/2) - 1 ]) +
+    //                         (inOrdElements[(inOrdElements.size()/2) ]))/2.0);
+
+    //   return (inOrdElements[(inOrdElements.size() + 1)/2 - 1]);
 }
-
-//GFG Editorial
-//Space Optimised Solution
-
-// int countNodes(Node* n)
-// {
-//     // this function returns number of nodes in tree
-//     if(!n) return 0;
-//     return 1 + countNodes(n->left) + countNodes(n->right);
-// }
-
-// int find(Node* n, int serialNo, int target, int& value)
-// {
-//     // this function keeps track of serial number while doing
-//     // inorder traveresal and finds the target node
-
-//     if(!n) return serialNo;
-//     serialNo = find(n->left, serialNo, target, value);
-
-//     serialNo++;
-//     // current value of serialNo variable is the rank of
-//     // current Node
-//     if(serialNo==target) value = n->data;
-
-//     serialNo = find(n->right, serialNo, target, value);
-//     return serialNo;
-// }
-
-// float findMedian(struct Node* root)
-// {
-//     int n = countNodes(root);
-
-//     if(n%2)
-//     {
-//         // odd number of nodes in tree:
-//         // 1+n/2 is the rank of mid node
-
-//         int mid = 0;
-//         find( root, 0, 1+n/2, mid );
-//         return mid;
-//     }
-//     else
-//     {
-//         // even number of nodes in tree:
-//         // n/2 and 1+n/2 are the ranks of mid nodes
-
-//         int mid1 = 0, mid2 = 0;
-//         find( root, 0, n/2, mid1 );
-//         find( root, 0, 1+n/2, mid2 );
-//         return ((float)(mid1+mid2))/2.0;
-//     }
-// }
